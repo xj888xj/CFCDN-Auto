@@ -24,7 +24,16 @@ jobs:
         python-version: '3.x'
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y curl && sudo apt-get install -y bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y curl bash
+
+    - name: Check if script exists
+      run: |
+        if [ ! -f cesu.sh ]; then
+          echo "Error: cesu.sh not found!"
+          exit 1
+        fi
 
     - name: Run shell script
       run: |
@@ -36,5 +45,5 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add FDIP/*.* CloudflareST/*.*
-        git commit -m "Add fdIPs with speed"
+        git commit --allow-empty -m "Add fdIPs with speed" || echo "No changes to commit"
         git push
