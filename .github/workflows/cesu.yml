@@ -41,7 +41,7 @@ jobs:
 
       - name: Commit and push changes to repository
         run: |
-          git add cesu.txt
+          git add ip.csv
           git commit -m "Update sgfd_ips.txt with new Singapore IPs" || echo "No changes to commit"
           git pull --rebase origin main || echo "No rebase necessary"
           git push origin main || echo "Nothing to push"
