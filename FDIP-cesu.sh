@@ -32,15 +32,6 @@ echo "==============================合并和去重文件=======================
 #cat "${FDIP_DIR}/45102-1-443.txt" "${FDIP_DIR}/31898-1-443.txt" | sort -u > "${FDIP_DIR}/all.txt"
 awk '!seen[$0]++' "${FDIP_DIR}/45102-1-443.txt" "${FDIP_DIR}/31898-1-443.txt" > "${FDIP_DIR}/all.txt"
 
-# 4. 读取 all.txt 并查询归属地，保留 SG（新加坡）的IP地址到 sg.txt
-echo "=========================筛选国家代码为SG的IP地址=========================="
-while IFS= read -r ip; do
-    country_code=$(curl -s "https://ipapi.co/$ip/country/" | tr -d '[:space:]')
-    if [ "$country_code" == "SG" ]; then
-        echo $ip >> "${CFST_DIR}/sg.txt"
-    fi
-done < "${FDIP_DIR}/all.txt"
-
 # 5. 删除 FDIP 文件夹中除了 all.txt 文件之外的所有文件
 echo "============================清理不必要的文件============================="
 find "${FDIP_DIR}" -type f ! -name 'all.txt' -delete
@@ -58,10 +49,6 @@ fi
 
 # 7. 执行 CloudflareST 进行测速
 echo "======================运行 CloudflareSpeedTest ========================="
-"${CFST_DIR}/CloudflareST" -tp 443 -f "${CFST_DIR}/sg.txt" -n 500 -dn 5 -tl 250 -tll 10 -o "${CFST_DIR}/sg.csv" -url "$URL"
-
-# 8. 从 sg.csv 文件中筛选下载速度高于 5 的 IP地址，并删除重复的 IP 地址行，生成 sgcs.txt
-echo "==================筛选下载速度高于 10mb/s 的IP地址并去重===================="
-awk -F, '!seen[$1]++' "${CFST_DIR}/sg.csv" | awk -F, 'NR>1 && $6 > 10 {print $1 "#" $6 "mb/s"}' > "${CFST_DIR}/sgcs.txt"
+"${CFST_DIR}/CloudflareST" -tp 443 -f "${CFST_DIR}/all.txt" -n 500 -dn 5 -tl 250 -tll 10 -o "${CFST_DIR}/ip.csv"
 
 echo "===============================脚本执行完成==============================="
