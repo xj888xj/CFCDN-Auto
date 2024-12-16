@@ -3,6 +3,9 @@
 # 设置语言
 export LANG=zh_CN.UTF-8
 
+# 开启错误处理
+set -e
+
 # 日志记录函数
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
@@ -10,7 +13,7 @@ log() {
 
 # 检查依赖项
 check_dependencies() {
-    for cmd in wget unzip curl awk; do
+    for cmd in wget unzip curl awk parallel; do
         if ! command -v $cmd &>/dev/null; then
             echo "$cmd 未安装，请安装后重试。"
             exit 1
@@ -77,7 +80,7 @@ export -f filter_ip
 cat "${FDIP_DIR}/all.txt" | parallel -j 4 filter_ip  # 使用并行处理
 
 # 5. 删除 FDIP 文件夹中除了 all.txt 文件之外的所有文件
-echo "============================清理不必要的文件============================="
+log "============================清理不必要的文件============================="
 find "${FDIP_DIR}" -type f ! -name 'all.txt' -delete
 
 # 6. 下载 CloudflareST_linux_amd64.tar.gz 文件到 CloudflareST 文件夹
@@ -104,7 +107,7 @@ for country_code in "${country_codes[@]}"; do
     # 检查文件是否存在
     if [[ -f "$ip_file" ]]; then
         log "对 ${country_code} 进行测速，使用文件 ${ip_file}"
-        "${CFST_DIR}/CloudflareST" -tp 443 -f "$ip_file" -n 500 -dn 5 -tl 250 -tll 10 -o "$output_file"
+        "${CFST_DIR}/CloudflareST" -tp 443 -f "$ip_file" -n 500 -dn 5 -tl 250 -tll 10 -o "$output_file" -url "$URL"
     else
         log "文件 ${ip_file} 不存在，跳过测速。"
     fi
