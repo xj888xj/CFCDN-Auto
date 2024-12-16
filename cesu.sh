@@ -76,6 +76,10 @@ filter_ip() {
 export -f filter_ip
 cat "${FDIP_DIR}/all.txt" | parallel -j 4 filter_ip  # 使用并行处理
 
+# 5. 删除 FDIP 文件夹中除了 all.txt 文件之外的所有文件
+echo "============================清理不必要的文件============================="
+find "${FDIP_DIR}" -type f ! -name 'all.txt' -delete
+
 # 6. 下载 CloudflareST_linux_amd64.tar.gz 文件到 CloudflareST 文件夹
 log "下载 CloudflareST"
 if [ ! -f "${CFST_DIR}/CloudflareST" ]; then
