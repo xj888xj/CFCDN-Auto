@@ -49,6 +49,6 @@ fi
 
 # 7. 执行 CloudflareST 进行测速
 echo "======================运行 CloudflareSpeedTest ========================="
-"${CFST_DIR}/CloudflareST" -tp 443 -f "${FDIP_DIR}/all.txt" -n 500 -dn 5 -tl 250 -tll 10 -o "${CFST_DIR}/ip.csv" -url "$URL"
+"${CFST_DIR}/CloudflareST" -tp 443 -f "${FDIP_DIR}/all.txt" -n 500 -dn 1 -tl 250 -tll 10 -o "${CFST_DIR}/ip.csv" -url "$URL"
 
 echo "===============================脚本执行完成==============================="
