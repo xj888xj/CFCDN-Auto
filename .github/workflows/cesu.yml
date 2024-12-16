@@ -1,0 +1,47 @@
+name: cesu
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 8,20 * * *'  # 每12小时运行一次，可以根据需求调整
+
+jobs:
+  update_ips_and_dns:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ipwhois requests
+
+      - name: Run Python script to update sgfd_ips.txt and DNS
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          CF_ZONE_YID: ${{ secrets.CF_ZONE_YID }}
+          CF_DNS_NAME: ${{ secrets.CF_DNS_NAME }}
+        run: python cesu.py
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Pull latest changes
+        run: |
+          git pull origin main
+
+      - name: Commit and push changes to repository
+        run: |
+          git add cesu.txt
+          git commit -m "Update sgfd_ips.txt with new Singapore IPs" || echo "No changes to commit"
+          git pull --rebase origin main || echo "No rebase necessary"
+          git push origin main || echo "Nothing to push"
