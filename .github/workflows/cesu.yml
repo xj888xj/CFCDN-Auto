@@ -28,7 +28,7 @@ jobs:
 
     - name: Run shell script
       run: |
-        chmod +x FDIP-cesu.sh
+        chmod +x cesu.sh
         ./cesu.sh
 
     - name: Commit and push results
