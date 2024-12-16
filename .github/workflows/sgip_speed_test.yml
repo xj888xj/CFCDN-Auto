@@ -1,4 +1,4 @@
-name: SGIP Speed Test
+name: IPSpeed Test
 
 on:
   workflow_dispatch:  # 手动触发
@@ -35,6 +35,6 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add FDIP/all.txt CloudflareST/sg.txt CloudflareST/sgcs.txt CloudflareST/sg.csv
-        git commit -m "Add SG fdIPs with speed > 5mb/s"
+        git add FDIP/all.txt CloudflareST/*.*
+        git commit -m "Add fdIPs with speed"
         git push
